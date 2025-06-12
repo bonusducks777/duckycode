@@ -158,7 +158,7 @@ void IRAM_ATTR handleMagnetChange() {
 
 ## Integration Note
 
-These scripts are designed as modular building blocks for the EEESeaBoat project. In the final system, their logic will be integrated into a comprehensive control program that:
+These scripts are modular building blocks for the EEESeaBoat rover. In the final system, their logic will be integrated into a comprehensive control program that:
 - Combines all sensor processing (ultrasonic, infrared, radio, magnetic) into a single codebase.
 - Handles controller and drivebase logic for rover movement and remote operation.
 - Hosts a unified web server that not only displays live sensor data but also saves and stores results for later analysis.
@@ -168,14 +168,9 @@ This modular approach allows for easier testing and debugging of each sensor sub
 
 ---
 
-## Project Context
+## Design Rationale
 
-These scripts are part of the EEESeaBoat project for the ELEC40006 Electronics Design Project. The goal is to survey ducks in a lab environment using a rover equipped with sensors for ultrasonic, infrared, radio, and magnetic signals. Each script provides a web-based interface for real-time feedback during the demo and testing phases.
-
-**Why this approach?**
-- Using ESP8266 modules allows each sensor to be independently monitored and debugged via Wi-Fi, without needing a complex wired interface or display.
+- ESP8266 modules allow each sensor to be independently monitored and debugged via Wi-Fi, without a complex wired interface or display.
 - The web server approach is platform-agnostic: any phone, tablet, or laptop can view the results in real time.
 - Interrupt-driven logic ensures reliable detection of fast or brief events, even if the main loop is busy with other tasks.
 - The code is modular and easy to adapt for future sensors or changes in the duck communication protocol.
-
-For more details, see the project brief and documentation in this repository.
