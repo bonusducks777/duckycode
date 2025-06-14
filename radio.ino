@@ -6,7 +6,7 @@ const char* password = "password123";
 
 ESP8266WebServer server(80);
 
-const int SIGNAL_PIN = 2; // D4 on NodeMCU/ESP8266 (GPIO2)
+const int SIGNAL_PIN = 15; // D8 on NodeMCU/ESP8266 (GPIO15)
 volatile unsigned long risingEdgeCount = 0;
 volatile unsigned long lastEdgeMicros = 0;
 volatile float lastFrequencyHz = 0;
@@ -40,7 +40,7 @@ void handleRoot() {
   else html += String(lastFrequencyHz, 2) + " Hz";
   html += "</td></tr></table>";
   html += "<p>IP: ";
-  html += WiFi.softAPIP();
+  html += WiFi.softAPIP().toString(); // Fix: convert IPAddress to String
   html += "</p>";
   html += "</body></html>";
   server.send(200, "text/html", html);

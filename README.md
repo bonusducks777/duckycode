@@ -6,10 +6,11 @@ This folder contains four ESP8266-based scripts for the ELEC40006 Electronics De
 
 | Script           | Sensor Type         | What it Detects         | Pin   | Web Output                |
 | ---------------- | ------------------ | ----------------------- | ----- | ------------------------ |
-| `ultrasonic.ino` | Ultrasonic UART    | Duck name (ASCII)       | D4    | Last detected name       |
-| `ir.ino`         | Infrared (digital) | IR frequency (Hz)       | D4    | Frequency metrics        |
-| `radio.ino`      | Radio (digital)    | Radio frequency (Hz)    | D4    | Frequency metrics        |
-| `magnetic.ino`   | Magnetic switch    | Magnet up/down state    | D4    | Last event & state       |
+| `ultrasonic.ino` | Ultrasonic UART    | Duck name (ASCII)       | D8    | Last detected name       |
+| `ir.ino`         | Infrared (digital) | IR frequency (Hz)       | D8    | Frequency metrics        |
+| `radio.ino`      | Radio (digital)    | Radio frequency (Hz)    | D8    | Frequency metrics        |
+| `magnetic.ino`   | Magnetic switch    | Magnet up/down state    | D8    | Last event & state       |
+| `drive.ino`      | Wi-Fi Rover Control| Rover drive commands     | D1/D2/D5/D6 | Drive status & control  |
 
 ---
 
@@ -146,10 +147,44 @@ void IRAM_ATTR handleMagnetChange() {
 
 ---
 
+## 5. `drive.ino` — ESP8266 Wi-Fi Rover Drivebase Control
+
+**Purpose:**
+Provides a web-based interface for real-time control of the rover's drive motors via Wi-Fi (ESP8266 in AP mode). Supports forward, backward, left, right, forward-left, and forward-right maneuvers, with continuous movement as long as a key is held.
+
+**Key Features:**
+- Runs a web server at http://192.168.4.1 for direct control (no external Wi-Fi needed).
+- Responsive WASD and arrow-style UI, plus keyboard shortcuts (W/A/S/D/Q/E/Space).
+- Supports combined keypresses (e.g., W+Q for forward-left) for smooth steering.
+- Motors run continuously in the last commanded direction until a new command or stop is sent.
+- Uses only safe ESP8266 output pins (D1/D2/D5/D6) for motor driver compatibility.
+- Built-in LED indicates Wi-Fi status.
+
+**How it works:**
+- Each movement command (forward, left, etc.) keeps the motors running until a new command or stop is sent.
+- The web UI tracks keydown/keyup events and sends commands only when the set of pressed keys changes, ensuring smooth, uninterrupted driving.
+- When all movement keys are released, the robot stops.
+
+**Wiring Notes:**
+- IN1 = D1 (GPIO5), IN2 = D2 (GPIO4), IN3 = D5 (GPIO14), IN4 = D6 (GPIO12).
+- Built-in LED is on D4 (GPIO2) by default.
+- Avoid using ESP8266 boot-sensitive pins for motor control.
+
+**Usage:**
+1. Flash to ESP8266 and power up.
+2. Connect to Wi-Fi SSID `ducky repeater` (password: `ducks123`).
+3. Open http://192.168.4.1 in a browser.
+4. Use the on-screen buttons or WASD/Q/E/Space keys for control.
+
+**Integration:**
+- Designed to be modular and ready for future integration with sensor scripts and unified rover control.
+
+---
+
 ## How to Use Each Script
 
 1. **Upload the script to your ESP8266 (NodeMCU, Wemos D1 Mini, etc.).**
-2. **Connect the appropriate sensor to D4 (GPIO2) and GND.**
+2. **Connect the appropriate sensor to D8 (GPIO15) and GND.**
 3. **Power the ESP8266 and wait for it to start.**
 4. **Connect your phone or laptop to the Wi-Fi hotspot created by the ESP8266 (see SSID in each script).**
 5. **Open a browser and go to `http://192.168.4.1` to view the live sensor data.**

@@ -6,26 +6,11 @@ const char* password = "password123";
 
 ESP8266WebServer server(80);
 
-const int MAGNET_PIN = 2; // D4 on NodeMCU/ESP8266 (GPIO2)
+const int MAGNET_PIN = 15; // Changed from 0 (D3) to 15 (D8)
 volatile bool magnetUp = false;
-volatile bool lastMagnetState = false;
 volatile unsigned long lastChangeTime = 0;
 
 String lastEvent = "None";
-
-void IRAM_ATTR handleMagnetChange() {
-  bool state = digitalRead(MAGNET_PIN);
-  if (state != lastMagnetState) {
-    lastMagnetState = state;
-    lastChangeTime = millis();
-    magnetUp = state;
-    if (magnetUp) {
-      lastEvent = "UP";
-    } else {
-      lastEvent = "DOWN";
-    }
-  }
-}
 
 void handleRoot() {
   String html = "<!DOCTYPE HTML><html><head>";
@@ -36,7 +21,7 @@ void handleRoot() {
   html += "<table><tr><th>Last Event</th><th>Current State</th></tr>";
   html += "<tr><td>" + lastEvent + "</td><td>" + (magnetUp ? "UP" : "DOWN") + "</td></tr></table>";
   html += "<p>AP IP: ";
-  html += WiFi.softAPIP();
+  html += WiFi.softAPIP().toString(); // Fix: convert IPAddress to String
   html += "</p>";
   html += "</body></html>";
   server.send(200, "text/html", html);
@@ -45,7 +30,6 @@ void handleRoot() {
 void setup() {
   Serial.begin(115200);
   pinMode(MAGNET_PIN, INPUT);
-  attachInterrupt(digitalPinToInterrupt(MAGNET_PIN), handleMagnetChange, CHANGE);
 
   WiFi.softAP(ssid, password);
   delay(100);
@@ -58,5 +42,17 @@ void setup() {
 }
 
 void loop() {
+  // Read analog value from the magnetic sensor
+  int sensorValue = analogRead(MAGNET_PIN); // 0-1023 for 0-3.3V
+  float voltage = sensorValue * (3.3 / 1023.0);
+
+  // Decide pole based on 2.5V threshold
+  bool newMagnetUp = (voltage > 2.5);
+  if (newMagnetUp != magnetUp) {
+    magnetUp = newMagnetUp;
+    lastChangeTime = millis();
+    lastEvent = magnetUp ? "UP" : "DOWN";
+  }
+
   server.handleClient();
 }

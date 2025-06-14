@@ -1,0 +1,62 @@
+/* index.html for unified robot server UI (Group 32)
+   Place in SPIFFS as /index.html
+*/
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' type='text/css' href='style.css'>
+  <script src="analysis.js"></script>
+  <title>Group 32 Rover Dashboard</title>
+</head>
+<body>
+  <div class="row">
+    <div class="column2">
+      <div class="card">
+        <div class="header">
+          <h1>Group 32 Data</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="card">
+        <div><h2>Drive Control</h2></div>
+        <div class="content">
+          <button onclick="drive('forward')">Forward</button>
+          <button onclick="drive('backward')">Backward</button>
+          <button onclick="drive('left')">Left</button>
+          <button onclick="drive('right')">Right</button>
+          <button onclick="drive('stop')">Stop</button>
+        </div>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <div><h2>Current Sensors</h2></div>
+        <div class="content">
+          <div>IR: <span id="ir">-</span> Hz</div>
+          <div>Radio: <span id="rf">-</span> Hz</div>
+          <div>Magnet: <span id="magnet">-</span></div>
+          <div>Duck Name: <span id="duckName">-</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function updateSensors() {
+      fetch('/sensors').then(r=>r.json()).then(data => {
+        document.getElementById('ir').textContent = data.ir;
+        document.getElementById('rf').textContent = data.rf;
+        document.getElementById('magnet').textContent = data.magnet;
+        document.getElementById('duckName').textContent = data.duckName;
+      });
+    }
+    function drive(cmd) {
+      fetch('/drive?cmd='+cmd).then(()=>{});
+    }
+    setInterval(updateSensors, 1000);
+    updateSensors();
+  </script>
+</body>
+</html>

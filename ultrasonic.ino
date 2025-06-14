@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 
 // RX from duck sensor, TX unused
-const uint8_t DUCK_RX_PIN = 2;
+const uint8_t DUCK_RX_PIN = 15; // Changed from 0 (D3) to 15 (D8)
 const uint8_t DUCK_TX_UNUSED = 3;
 
 SoftwareSerial duckSerial(DUCK_RX_PIN, DUCK_TX_UNUSED);
@@ -85,7 +85,7 @@ void handleRoot() {
   html += "<table><tr><th>Last Detected Duck</th></tr>";
   html += "<tr><td>" + (lastReportedDuck != "" ? lastReportedDuck : "None") + "</td></tr></table>";
   html += "<p>AP IP: ";
-  html += WiFi.softAPIP();
+  html += WiFi.softAPIP().toString(); // Fix: convert IPAddress to String
   html += "</p>";
   html += "</body></html>";
   server.send(200, "text/html", html);

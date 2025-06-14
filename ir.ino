@@ -1,12 +1,12 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-const char* ssid = "ESP8266-FreqCounter";
+const char* ssid = "ESP8266-IRFreqCounter";
 const char* password = "password123";
 
 ESP8266WebServer server(80);
 
-const int SIGNAL_PIN = 2; // D4 on NodeMCU/ESP8266 (GPIO2)
+const int SIGNAL_PIN = 15; // D8 on NodeMCU/ESP8266 (GPIO15)
 volatile unsigned long risingEdgeCount = 0;
 volatile unsigned long lastEdgeMicros = 0;
 volatile float lastFrequencyHz = 0;
